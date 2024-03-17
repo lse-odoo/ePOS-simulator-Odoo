@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, Response
+import os, signal, webbrowser
 
 from receipt import ImageInfo, ReceiptQueue
 
 app = Flask(__name__)
 
 @app.route("/")
-def hello_world():
+def home():
     return render_template("usage.jinja")
 
 @app.get("/receipts-frame")
@@ -19,8 +20,15 @@ def receipts_frame():
 def receipts():
     return render_template("receipts.jinja")
 
+@app.get("/options")
+def options():
+    return render_template("options.jinja")
 
-@app.post("/cgi-bin/epos/service.cgi")
+@app.get("/quit")
+def quit():
+    os.kill(os.getpid(), signal.SIGINT)
+    return "Server Shutting down..."
+
 def epos_print():
     """
     Simulate the ePOS print route. This is called by Odoo PoS customers when they print a receipt.
@@ -33,3 +41,18 @@ def epos_print():
         headers={"Access-Control-Allow-Origin": "*"}
     )
 
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    
+    parser.add_argument('--https', dest='https', action='store_true', help='Wherever the connection should be in HTTPS (default)', default=True)
+    parser.add_argument('--http', dest='https', action='store_false', help='Wherever the connection should be in HTTP')
+
+    args = parser.parse_args()
+    is_https = args.https
+
+    URL_SCHEMA = "https" if is_https else "http"
+    SSL_CONTEXT = "adhoc" if is_https else None
+
+    webbrowser.open(f"{URL_SCHEMA}://127.0.0.1:5000")
+    app.run(ssl_context=SSL_CONTEXT)
