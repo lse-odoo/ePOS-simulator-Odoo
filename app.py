@@ -35,7 +35,8 @@ def epos_print():
     Simulate the ePOS print route. This is called by Odoo PoS customers when they print a receipt.
     It receives the receipt and adds it to the queue.
     """
-    ReceiptQueue.add_receipt_to_queue(ImageInfo.ImageInfo(request.data))
+    receipt_data = request.data or bytes(request.form.get('\n        \n        <s:Envelope xmlns:s'), 'utf-8')
+    ReceiptQueue.add_receipt_to_queue(ImageInfo.ImageInfo(receipt_data))
     return Response(
         '<response xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print" success="true" code="dummy-simulated-epos-printer" />',
         mimetype="text/xml",
