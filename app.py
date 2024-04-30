@@ -29,6 +29,7 @@ def quit():
     os.kill(os.getpid(), signal.SIGINT)
     return "Server Shutting down..."
 
+@app.post("/cgi-bin/epos/service.cgi")
 def epos_print():
     """
     Simulate the ePOS print route. This is called by Odoo PoS customers when they print a receipt.
