@@ -1,0 +1,30 @@
+{% extends "base.jinja" %} 
+
+{# Remove navigation as intended to be use in an iframe #}
+{% block nav %}{% endblock %} 
+
+{% block content %}
+
+{% if receipts_info %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for receipt_info in receipts_info %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        {% if receipt_info.test %}
+                            <p class="card-text text-warning"><strong>DUMMY RECEIPT</strong></p>
+                        {% endif %}
+                        <p class="card-text"><small class="text-muted">Received at {{ receipt_info.receive_time.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+                    </div>
+                    <img src="data:image/jpeg;base64, {{receipt_info.image_base_64}}"/>
+                </div>
+            </div>    
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-warning" role="alert">
+        No receipts received
+    </div>
+{% endif %}
+
+{% endblock %}

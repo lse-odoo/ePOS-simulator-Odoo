@@ -1,0 +1,12 @@
+[project]
+name = "epos_simulator_odoo"
+version = "1.0.0"
+description = "ePoS Simulator to configure with Odoo"
+maintainers = [{name = "LSE Odoo", email = "lse@odoo.com"}]
+dependencies = [
+    "flask",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

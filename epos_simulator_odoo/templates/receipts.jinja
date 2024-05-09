@@ -1,0 +1,97 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+
+<h1>Receipts History</h1>
+
+<div class="alert alert-info" role="alert" style="margin-top: 1rem">
+    You can right-click on the receipt picture to open them in new tab or save them.
+</div>
+
+<div id="toolbox">
+    <nav class="nav navbar-expand-lg navbar-light bg-light">
+        <ul class="nav">
+            <li class="nav-item button">
+                <input id="frameRefreshDelayInput" type="range" min="0.5" max="10" step="0.5" oninput="changeFrameRefreshDelay(this.value, true)" onchange="changeFrameRefreshDelay(this.value, false)">
+                <button type="button" class="btn btn-outline-success" onclick="refreshFrame()"><i class="bi bi-arrow-clockwise"></i></button>
+                <button type="button" class="btn btn-outline-info" data-bs-toggle="button" onclick="togglePauseFrame()"><i class="bi bi-pause"></i></button>
+                <span class="text-muted small" id="refreshStatus"></span>
+            </li>
+        </ul>
+    </nav>
+</div>
+<div class="ratio ratio-16x9">
+    <iframe id="receipt-frame" src="/receipts-frame" style="border:2px solid gray;"></iframe>
+</div>
+
+<script>
+{
+let currentRefreshDelay = 5;
+let automaticRefresh;
+let automaticRefreshPause = false;
+
+const receiptFrame = document.getElementById('receipt-frame');
+const refreshStatusSpan = document.getElementById('refreshStatus');
+const frameRefreshDelayInput = document.getElementById('frameRefreshDelayInput');
+
+frameRefreshDelayInput.value = currentRefreshDelay;
+
+function computeRefreshStatus() {
+    if (automaticRefreshPause) {
+        return 'Automatic refresh paused';
+    }
+    return 'Automatic refresh every ' + currentRefreshDelay + ' seconds';
+}
+
+function updateRefreshStatus() {
+    refreshStatusSpan.innerText = computeRefreshStatus();
+}
+
+function cancelAutomaticRefresh() {
+    if (automaticRefresh) {
+        clearInterval(automaticRefresh);
+    }
+}
+
+function createAutomaticRefresh() {
+    cancelAutomaticRefresh();
+
+    automaticRefresh = setInterval(() => {
+        refreshFrame();
+    }, currentRefreshDelay * 1000);
+
+}
+
+function refreshFrame() {
+    receiptFrame.contentWindow.location.reload();
+    if (!automaticRefreshPause) {
+        // Avoid re-refreshing as we already did it manually
+        createAutomaticRefresh();
+    }
+}
+
+function pauseAutoRefresh(pause) {
+    if (pause) {
+        cancelAutomaticRefresh();
+    } else {
+        createAutomaticRefresh();
+    }
+    updateRefreshStatus();
+}
+
+function togglePauseFrame() {
+    automaticRefreshPause = !automaticRefreshPause;
+    pauseAutoRefresh(automaticRefreshPause);
+    frameRefreshDelayInput.disabled = automaticRefreshPause;
+}
+
+function changeFrameRefreshDelay(value, oninput) {
+    currentRefreshDelay = value;
+    // Avoid refreshing the frame while playing with the slider
+    pauseAutoRefresh(oninput);
+}
+changeFrameRefreshDelay(currentRefreshDelay);
+}
+</script>
+
+{% endblock %}
