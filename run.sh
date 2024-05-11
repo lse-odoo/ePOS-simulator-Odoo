@@ -3,6 +3,7 @@
 
 if [ ! -d "venv" ]; then
   echo "ERROR: missing virtual environement. Please make sure that setup.sh was ran first."
+  notify-send -a "EPOS Simulator Odoo" -u critical -i error "Run Error" "$1"
   exit 1
 fi
 
