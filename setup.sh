@@ -22,7 +22,8 @@ fi
 echo "Creating virtual environment..."
 python3 -m venv venv
 
-if [ ! -d venv]; then
+if [ $? -ne 0 ]; then
+  rm -rf venv
   exit_on_error "The virtual environment was not created successfully"
 fi
 
