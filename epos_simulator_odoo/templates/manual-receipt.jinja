@@ -1,0 +1,48 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+
+<h1>Manual</h1>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+  An error occured while trying to convert the receipt:
+    <br>
+    <code>{{ error }}</code>
+</div>
+{% endif %}
+
+
+
+{% if receipt_info %}
+<div>
+    <a class="btn btn-secondary" href="/receipt-manual" role="button">Reset</a>
+
+    <div>
+        <img class="img-thumbnail" src="data:image/jpeg;base64, {{receipt_info.image_base_64}}"/>
+    </div>
+</div>
+{% else %}
+
+<p>
+Input in the following box the content of the receipt you want to convert to a picture.
+</p>
+
+<form method="post">
+    <div class="form-group">
+        <label for="receipt_content">Receipt Raw Data</label>
+        <textarea class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="receipt_content" id="receipt_content" rows="10" 
+        placeholder=
+'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+            <s:Body>
+                <epos-print xmlns="http://www.epson-pos.com/schemas/2011/03/epos-print"><image  width="512" height="466" align="center">AAAAAAAAAAA...
+                ...
+                AAAAAA==</image><cut  type="feed"/></epos-print>
+            </s:Body>
+        </s:Envelope>'>{{ previous_receipt_content if previous_receipt_content else '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Convert to receipt picture</button>
+</form>
+{% endif %}
+
+{% endblock %}
